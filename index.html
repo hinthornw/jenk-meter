@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jenk Meter Demo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding-bottom: 48px;
+    }
+    h1 { font-size: 20px; font-weight: 500; opacity: 0.7; margin-bottom: 8px; }
+    p { font-size: 13px; opacity: 0.4; max-width: 400px; text-align: center; line-height: 1.5; }
+    .actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; justify-content: center; }
+    button {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #e0e0e0;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    button:hover { background: rgba(255,255,255,0.14); }
+    #canvas { border-radius: 8px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Jenk Meter</h1>
+  <p>Developer toolbar overlay. Use the buttons below to generate artificial load and watch the metrics change. Press <kbd>Ctrl+Shift+J</kbd> to toggle.</p>
+
+  <div class="actions">
+    <button id="btn-jank">Block Main Thread (200ms)</button>
+    <button id="btn-heavy">Heavy Layout Thrash</button>
+    <button id="btn-fetch">Spam 5 Fetches</button>
+    <button id="btn-alloc">Allocate 50MB</button>
+  </div>
+
+  <canvas id="canvas" width="300" height="100"></canvas>
+
+  <script type="module">
+    import { JankMeter } from "./src/jank-meter.ts";
+
+    const jm = new JankMeter({ enabled: true });
+    jm.start();
+
+    // Simple canvas animation to show frame rate visually
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let frame = 0;
+    function draw() {
+      frame++;
+      ctx.fillStyle = "rgba(10,10,10,0.15)";
+      ctx.fillRect(0, 0, 300, 100);
+      const x = (frame * 2) % 300;
+      ctx.fillStyle = `hsl(${frame % 360}, 70%, 60%)`;
+      ctx.fillRect(x, 20, 4, 60);
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+
+    // Jank generators
+    document.getElementById("btn-jank").addEventListener("click", () => {
+      const end = performance.now() + 200;
+      while (performance.now() < end) { Math.random(); }
+    });
+
+    document.getElementById("btn-heavy").addEventListener("click", () => {
+      const el = document.createElement("div");
+      el.style.cssText = "position:absolute;top:0;left:0;width:100%;";
+      document.body.appendChild(el);
+      for (let i = 0; i < 500; i++) {
+        el.style.width = (50 + Math.random() * 50) + "%";
+        void el.offsetHeight; // force layout
+      }
+      el.remove();
+    });
+
+    document.getElementById("btn-fetch").addEventListener("click", () => {
+      for (let i = 0; i < 5; i++) {
+        fetch("https://httpbin.org/delay/2").catch(() => {});
+      }
+    });
+
+    let leaks = [];
+    document.getElementById("btn-alloc").addEventListener("click", () => {
+      leaks.push(new ArrayBuffer(50 * 1024 * 1024));
+    });
+  </script>
+</body>
+</html>

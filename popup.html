@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      width: 200px;
+      padding: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      margin: 0;
+    }
+    h3 { margin: 0 0 10px; font-size: 14px; font-weight: 500; }
+    button {
+      width: 100%;
+      padding: 8px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e0e0e0;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    button:hover { background: rgba(255,255,255,0.14); }
+    .status { margin-top: 8px; font-size: 11px; opacity: 0.5; text-align: center; }
+  </style>
+</head>
+<body>
+  <h3>⌘ Jenk Meter</h3>
+  <button id="toggle">Enable</button>
+  <div class="status" id="status">Off</div>
+
+  <script>
+    const btn = document.getElementById("toggle");
+    const status = document.getElementById("status");
+
+    chrome.storage.local.get("enabled", (data) => {
+      update(!!data.enabled);
+    });
+
+    btn.addEventListener("click", () => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, { type: "JENK_METER_TOGGLE" });
+      });
+      // Flip local display
+      chrome.storage.local.get("enabled", (data) => {
+        update(!data.enabled);
+      });
+    });
+
+    function update(enabled) {
+      btn.textContent = enabled ? "Disable" : "Enable";
+      status.textContent = enabled ? "Running on current page" : "Off";
+    }
+  </script>
+</body>
+</html>
