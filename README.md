@@ -2,7 +2,7 @@
 
 Linear-style developer performance toolbar for any web app. Chrome/Arc extension that overlays live metrics at the bottom of every page.
 
-![screenshot](https://github.com/hinthornw/jenk-meter/raw/main/screenshot.png)
+![screenshot](figures/popup.jpg)
 
 ## Metrics
 
@@ -18,26 +18,26 @@ Click **Jank** for a detailed breakdown: long tasks, layout shifts, frame histog
 
 ## Install
 
-### From source (Chrome / Arc / Brave / Edge)
-
 1. Clone the repo:
    ```
    git clone https://github.com/hinthornw/jenk-meter.git
    ```
 2. Open your browser's extension page:
-   - Chrome: `chrome://extensions`
-   - Arc: `arc://extensions`
-   - Brave: `brave://extensions`
-   - Edge: `edge://extensions`
-3. Enable **Developer mode** (toggle in top-right)
-4. Click **Load unpacked**
-5. Select the `jenk-meter` folder
-6. Navigate to any page and refresh — the toolbar appears at the bottom
+   - **Chrome**: navigate to `chrome://extensions`
+   - **Arc**: navigate to `arc://extensions`
+   - **Brave**: navigate to `brave://extensions`
+   - **Edge**: navigate to `edge://extensions`
+3. Enable **Developer mode**
+   - **Chrome / Brave / Edge**: toggle in the top-right corner
+   - **Arc**: toggle at the top of the extensions page
+4. Click **Load unpacked** and select the `jenk-meter` folder
+5. Navigate to any page and refresh — the toolbar appears at the bottom
 
-### Controls
+## Controls
 
-- **↓** — Collapse the toolbar
-- **—** — Hide the toolbar (refresh page to bring it back)
+- Click **Jank** to open/close the breakdown tooltip
+- **↓** — Collapse the toolbar to just the controls
+- **—** — Hide the toolbar (refresh the page to bring it back)
 
 ## In-app usage (without extension)
 
